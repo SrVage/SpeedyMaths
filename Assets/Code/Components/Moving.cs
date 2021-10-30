@@ -1,7 +1,10 @@
-﻿namespace Client.Components
+﻿using Leopotam.Ecs;
+
+namespace Client.Components
 {
-    public struct Moving
+    public struct Moving:IEcsIgnoreInFilter
+
     {
-        
+
     }
 }

@@ -1,4 +1,5 @@
 using Client.Config;
+using Client.Services;
 using Client.Systems;
 using Leopotam.Ecs;
 using UnityEngine;
@@ -7,6 +8,7 @@ namespace Client {
     sealed class EcsStartup : MonoBehaviour
     {
         [SerializeField] private ExpressionsConfig _expressionsConfig;
+        [SerializeField] private ScreenConfig _screenConfig;
         EcsWorld _world;
         EcsSystems _systems;
 
@@ -21,7 +23,8 @@ namespace Client {
 #endif
             _systems
                 // register your systems here, for example:
-                .Add(new GameInitSystem())
+                //.Add(new GameInitSystem())
+                .Add(new ChangeScreenService())
                 .Add (new CreateNewExpressionSystem())
                 .Add(new MoveExpressionSystem())
                 .Add(new ExpressionDestroySystem())
@@ -29,6 +32,7 @@ namespace Client {
                 .Add(new CreateUIButtonSystem())
                 .Add(new ChangeUIButtonText())
                 .Add(new CheckAnswerSystem())
+                .Add(new StartGameSystem())
                 // .Add (new TestSystem2 ())
                 
                 // register one-frame components (order is important), for example:
@@ -37,6 +41,7 @@ namespace Client {
                 
                 // inject service instances here (order doesn't important), for example:
                  .Inject (_expressionsConfig)
+                 .Inject(_screenConfig)
                 // .Inject (new NavMeshSupport ())
                 .Init ();
         }

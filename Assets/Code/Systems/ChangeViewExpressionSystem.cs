@@ -6,9 +6,16 @@ namespace Client.Systems
 {
     public class ChangeViewExpressionSystem:IEcsRunSystem
     {
-        public readonly EcsFilter<Expression, MathExpression> _expressions;
+        private readonly EcsFilter<Expression, MathExpression> _expressions;
+        private readonly EcsFilter<GameState> _gameState;
         public void Run()
         {
+            foreach (var state in _gameState)
+            {
+                ref var currentState = ref _gameState.Get1(state).GameStatus;
+                if (currentState != GameStatus.Play)
+                    return;
+            }
             foreach (var expression in _expressions)
             {
                 ref var firstNumberText = ref _expressions.Get1(expression).NumberOne;

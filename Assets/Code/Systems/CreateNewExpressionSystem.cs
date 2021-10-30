@@ -12,10 +12,23 @@ namespace Client.Systems
     {
         private readonly ExpressionsConfig _expressionsConfig;
         private readonly EcsFilter<Expression> _expression;
+        private readonly EcsFilter<GameState> _gameState;
+        private readonly EcsFilter<CurrentDifficult> _difficult;
         private readonly EcsWorld _world;
         public void Run()
         {
+            foreach (var state in _gameState)
+            {
+                ref var currentState = ref _gameState.Get1(state).GameStatus;
+                if (currentState != GameStatus.Play)
+                    return;
+            }
             if (!_expression.IsEmpty()) return;
+            LevelDifficult difficult = LevelDifficult.Easy;
+            foreach (var VARIABLE in _difficult)
+            {
+                difficult = _difficult.Get1(VARIABLE).Difficult;
+            }
             var go = GameObject.Instantiate(_expressionsConfig._prefab);
             var entity = _world.NewEntity();
             go.GetComponent<MonoBehaviourEntity>().Initial(entity, _world);
@@ -26,7 +39,20 @@ namespace Client.Systems
             first = Random.Range(0, 99);
             second = Random.Range(9, 99);
             var values = Enum.GetValues(typeof(Operation));
-            oper = (Operation)values.GetValue(Random.Range(0,4));
+            switch (difficult)
+            {
+                case LevelDifficult.Easy:
+                    oper = (Operation)values.GetValue(Random.Range(0,2));
+                    break;
+                case LevelDifficult.Medium:
+                    oper = (Operation)values.GetValue(Random.Range(0,3));
+                    break;
+                case LevelDifficult.High:
+                    oper = (Operation)values.GetValue(Random.Range(0,4)); 
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
     }
 }

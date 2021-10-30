@@ -7,8 +7,15 @@ namespace Client.Systems
     {
         private readonly EcsFilter<ButtonTextRef, RightAnswer> _rightAnswer;
         private readonly EcsFilter<ButtonTextRef, LooseAnswer> _looseAnswer;
+        private readonly EcsFilter<GameState> _gameState;
         public void Run()
         {
+            foreach (var state in _gameState)
+            {
+                ref var currentState = ref _gameState.Get1(state).GameStatus;
+                if (currentState != GameStatus.Play)
+                    return;
+            }
             foreach (var right in _rightAnswer)
             {
                 ref var text = ref _rightAnswer.Get1(right).ButtonText;

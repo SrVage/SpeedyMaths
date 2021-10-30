@@ -9,8 +9,15 @@ namespace Client.Systems
     {
         private readonly EcsFilter<MathExpression> _mathExpression;
         private readonly EcsFilter<ButtonTextRef>.Exclude<RightAnswer, LooseAnswer> _answer;
+        private readonly EcsFilter<GameState> _gameState;
         public void Run()
         {
+            foreach (var state in _gameState)
+            {
+                ref var currentState = ref _gameState.Get1(state).GameStatus;
+                if (currentState != GameStatus.Play)
+                    return;
+            }
             foreach (var math in _mathExpression)
             {
                 ref var numberOne = ref _mathExpression.Get1(math).FirstNumber;
